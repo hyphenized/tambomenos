@@ -1,0 +1,112 @@
+@font-face {
+  font-family: "tambo";
+  src: url("/localgothics.woff2") format("woff2");
+}
+body {
+  background: rgb(243, 228, 15);
+}
+main {
+  margin: 0 auto;
+  max-width: 860px;
+  padding: 3rem 1rem;
+}
+.search-box {
+  max-width: 30rem;
+  margin: 3rem auto;
+  margin-top: 9rem;
+}
+form {
+  display: flex;
+}
+input {
+  padding: 0 0.35rem;
+  flex: 1;
+  margin-right: 0.5rem;
+  line-height: 2;
+  border-radius: 3px;
+  border: 1px solid white;
+}
+input:focus {
+  border: 1px solid purple;
+}
+form button {
+  background: purple;
+  border: none;
+  color: white;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  font-family: "tambo";
+  font-weight: 500;
+}
+.results {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0 -1.5rem;
+}
+.result {
+  background: white;
+  /* border: 1px solid #dddddd; */
+  padding: 1rem 1.2rem;
+  margin: 0 1.5rem;
+  margin-bottom: 3rem;
+  border-radius: 5px;
+  box-sizing: border-box;
+  min-width: 15rem;
+  max-width: 28%;
+  display: flex;
+  flex-direction: column;
+  animation: falldown .70s forwards;
+}
+.result--blank{
+  opacity: 0;
+}
+@keyframes falldown{
+  from{
+    opacity: 0.25;
+    transform: translateY(-10%)
+  }
+  to{
+    opacity: 1;
+    transform: translateY(0%)
+  }
+}
+.result-discount {
+  position: absolute;
+  bottom: 0;
+  right: -1.2rem;
+  background: purple;
+  color: white;
+  font-size: 120%;
+  font-family: sans-serif;
+  text-transform: uppercase;
+  padding: 0.45rem 0.65rem;
+}
+.result .img-wrapper {
+  position: relative;
+  min-height: 10rem;
+}
+.result img {
+}
+.result-title {
+  font-size: 1.25rem;
+  font-family: "tambo";
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+.result-price {
+  /* background: #000; */
+  /* color: #fff; */
+  font-family: sans-serif;
+  font-weight: bold;
+  text-align: right;
+  margin: auto 0 0.5rem 0;
+  line-height: 1.35;
+  font-size: 1.35rem;
+}
+.ref-price {
+  font-family: sans-serif;
+  font-size: 0.75rem;
+}
