@@ -1,14 +1,20 @@
 const devLog = console.log;
-//fetch("https://tambomas.pe/public/api/promos/").then(devLog);
-//fetch("https://tambomas.pe/public/api/promos/5ed91f542f9b90412f68337b").then(devLog);
+//"https://tambomas.pe/public/api/promos/"
+//"https://tambomas.pe/public/api/promos/5ed91f542f9b90412f68337b"
+
+const API_URL = "https://tambomas.pe/public/api/promos";
 const getJSON = (url) =>
   fetch(url, { headers: { Accept: "application/json" } });
 
-const data = getJSON("data.json").then((r) => r.json());
+const data = getJSON(API_URL)
+  .then((r) => r.json())
+  .catch((err) => {
+    alert("No pudimos conectar con el api de Tambo");
+    return { promos: [] };
+  });
 
 const searchInput = document.getElementById("search");
 const searchBtn = document.getElementById("searchnow");
-const promo_data = getJSON("promo_data.json").then((r) => r.json());
 
 function makeModal(promoData) {
   const {
@@ -46,7 +52,8 @@ function showResultModal(_event) {
   /* if (this != _event.target) return */
   if (modal.loading) return;
   modal.loading = true;
-  promo_data
+  getJSON(`${API_URL}/${this.dataset.promoId}`)
+    .then((r) => r.json())
     .then(addPromoMetadata)
     .then((promo) => {
       modal.onclick = function (e) {
