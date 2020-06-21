@@ -15,14 +15,15 @@ main {
   padding: 3rem 1rem;
 }
 .search{
+  display: flex;
   margin-top: 4.5rem;
   margin: 3rem 0;
+  justify-content: center;
 }
 .search-box {
   flex: 1;
   display: flex;
   max-width: 30rem;
-  margin-left: auto;
 }
 
 .search-sorter {
@@ -49,9 +50,6 @@ main {
   font-family: "tambo";
 }
 
-form {
-  display: flex;
-}
 input {
   padding: 0 0.35rem;
   flex: 1;
@@ -231,21 +229,20 @@ form button {
   border-radius: 5px;
   margin-right: -5px;
 }
-.favorites ul li {
+.favorites-item {
   display: block;
-  margin: 1rem 0;
-  padding-bottom: 1rem;
+  padding: 0.25rem 0 ;
   border-bottom: 1px solid rgba(37, 37, 37, 0.26);
   position: relative;
 }
-.favorites ul li:last-child {
+.favorites-item:last-child {
   border: none
 }
 
 .favorite {
   display: flex;
   align-items: center;
-  /* border: 1px solid red; */
+  cursor: pointer;
 }
 .favorite .result-title {
   max-width: 6rem;

@@ -6,7 +6,7 @@ const getJSON = (url) =>
 
 const data = getJSON("data.json").then((r) => r.json());
 
-const search = document.getElementById("search");
+const searchInput = document.getElementById("search");
 const searchBtn = document.getElementById("searchnow");
 const promo_data = getJSON("promo_data.json").then((r) => r.json());
 
@@ -67,7 +67,7 @@ function FavoritesManager(promos) {
 
   function createFavorite(promo) {
     const { _id: promoId, name, photo, price } = promo;
-    const html = `<li data-promo-id=${promoId}>
+    const html = `<li class="favorites-item" data-promo-id=${promoId}>
     <div class="favorite">
       <div class="img-wrapper">
          <img width="100%" src="https://tambomas.pe/${photo}">
@@ -117,11 +117,13 @@ function FavoritesManager(promos) {
   };
 }
 
+let favorites;
+
 function drawResults(data) {
   const container = document.querySelector(".results");
   const { promos } = data;
   const results = container.cloneNode();
-  const favorites = new FavoritesManager(promos);
+  favorites = favorites || new FavoritesManager(promos);
   //devLog(results);
   results.innerHTML = promos.map(resultToHTML).join("");
   // attach event listeners
@@ -156,7 +158,7 @@ function drawResults(data) {
 }
 
 function addPromoMetadata(promo) {
-  const desc_price_rx = /(?:S\/)?(\d+\.\d{2})/;
+  const desc_price_rx = /(?:S\/)?(\d+\.\d{2}).*$/;
   const price_rx = /(\d+(?:\.\d+))/;
 
   function extractPrice(price, regex) {
@@ -175,6 +177,10 @@ function addPromoMetadata(promo) {
   if (promo._price && promo._ogprice) {
     const { _price, _ogprice } = promo;
     promo.discount = parseInt(((_ogprice - _price) * 100) / _ogprice);
+  }
+
+  if (promo.dateTo) {
+    promo._dateExp = Date.parse(promo.dateTo);
   }
 
   return promo;
@@ -238,13 +244,38 @@ function maybeDebounce(fn, timeMs) {
 }
 
 const inputLogger = (ev) => devLog("typed", ev.target.value);
-function maybeSearch(event) {
-  const input = event.target.value.toLowerCase();
+const sortInput = document.getElementById("search-sorter");
+
+function search(query, criteria) {
+  function sort_by(results, criteria) {
+    const byPrice = (a, b) => a._price - b._price;
+    const byDiscount = ({ discount: a = 0 }, { discount: b = 0 }) => b - a;
+    switch (criteria) {
+      case "price":
+        return results.sort(byPrice);
+      case "discount":
+        return results.sort(byDiscount);
+      default:
+        return results;
+    }
+  }
   const hasQuery = (promo) =>
-    promo.description.toLowerCase().indexOf(input) != -1;
+    promo.description.toLowerCase().indexOf(query) != -1;
   data.then(({ promos }) => {
     const result = promos.filter(hasQuery);
+    if (criteria) {
+      return drawResults({ promos: sort_by(result, criteria) });
+    }
     drawResults({ promos: result });
   });
 }
-search.addEventListener("input", maybeDebounce(maybeSearch, 700));
+
+function handleSearch(event) {
+  const input = searchInput.value.toLowerCase();
+  const criteria = sortInput.value;
+  search(input, criteria);
+}
+
+searchInput.addEventListener("input", maybeDebounce(handleSearch, 700));
+
+sortInput.onchange = handleSearch;
