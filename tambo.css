@@ -13,7 +13,7 @@ main {
 .search-box {
   max-width: 30rem;
   margin: 3rem auto;
-  margin-top: 9rem;
+  margin-top: 4.5rem;
 }
 form {
   display: flex;
@@ -38,6 +38,13 @@ form button {
   letter-spacing: 1.2px;
   font-family: "tambo";
   font-weight: 500;
+}
+.site-title {
+  font-family: "tambo";
+  font-size: 3.45rem;
+  margin-top: 4rem;
+  text-align: center;
+  color: purple;
 }
 .results {
   display: flex;
