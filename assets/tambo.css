@@ -1,6 +1,6 @@
 @font-face {
   font-family: "tambo";
-  src: url("/localgothics.woff2") format("woff2");
+  src: url("localgothics.woff2") format("woff2");
 }
 :root {
   --yellow: rgb(243, 228, 15);
