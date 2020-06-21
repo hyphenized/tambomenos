@@ -4,23 +4,72 @@ const devLog = console.log;
 const getJSON = (url) =>
   fetch(url, { headers: { Accept: "application/json" } });
 
-const data = fetch("data.json").then((r) => r.json());
+const data = getJSON("data.json").then((r) => r.json());
 
 const search = document.getElementById("search");
 const searchBtn = document.getElementById("searchnow");
+const promo_data = getJSON("promo_data.json").then((r) => r.json());
+
+function makeModal(promoData) {
+  const {
+    categories,
+    description,
+    name,
+    photo,
+    _price,
+    _ogprice,
+    dateTo,
+    discount,
+  } = promoData;
+
+  return `<div class="result result-modal-data">
+  <span class="modal-close">X</span>
+  <div class="img-wrapper result-modal-img">
+      <img src="https://tambomas.pe/${photo}" width="100%">
+      <p class="result-discount">${discount}% dscto.</p>
+  </div>
+  <div class="result-full-data">
+      <span class="result-category">Categoria: ${categories}</span>
+      <h2 class="result-title">${name}</h2>
+      <p class="result-description">${description}</p>
+      <p class="result-price">S/. ${_price}</p>
+      <small class="ref-price">Precio ref. S/. ${_ogprice.toFixed(
+        2
+      )}</small> <br>
+      <small class="ref-price">Fecha limite: ${dateTo.substring(0, 10)}</small>
+  </div>
+</div>`;
+}
 
 function drawResults(data) {
   const container = document.querySelector(".results");
   const { promos } = data;
   const results = container.cloneNode();
   //devLog(results);
-
+  function showResultModal(_event) {
+    const modal = document.getElementById("result-modal");
+    if (modal.loading) return;
+    modal.loading = true;
+    promo_data
+      .then(addPromoMetadata)
+      .then((promo) => {
+        modal.onclick = function (e) {
+          if (e.target == this) modal.style.display = null;
+        };
+        modal.innerHTML = makeModal(promo);
+        modal.querySelector(".modal-close").onclick = modal.onclick;
+        modal.style.display = "block";
+        //console.log(this.dataset.id);
+      })
+      .finally(() => (modal.loading = false));
+  }
   results.innerHTML = promos.map(resultToHTML).join("");
-  //devLog(results);
+  // attach event listeners
+  [...results.children].forEach((result) => (result.onclick = showResultModal));
 
   container.parentElement.replaceChild(results, container);
 
-  function resultToHTML({ name, _ogprice, price, discount, photo }) {
+  function resultToHTML({ _id, name, _ogprice, price, discount, photo }) {
     const totalDiscount = discount
       ? `<p class="result-discount">${discount}% dscto.</p>`
       : "";
@@ -30,7 +79,7 @@ function drawResults(data) {
           2
         )}</small>`
       : "";
-    return `<div class="result">
+    return `<div class="result" data-id="${_id}">
       <div class="img-wrapper">
         <img width="100%" src="https://tambomas.pe/${photo}">
         ${totalDiscount}
@@ -42,7 +91,7 @@ function drawResults(data) {
   }
 }
 
-function addMetadata(data) {
+function addPromoMetadata(promo) {
   const desc_price_rx = /(?:S\/)?(\d+\.\d{2})/;
   const price_rx = /(\d+(?:\.\d+))/;
 
@@ -52,21 +101,25 @@ function addMetadata(data) {
     return price;
   }
 
-  data.promos.forEach((promo) => {
-    const hasValidPrice = (str, regx) => regx.test(str);
-    if (hasValidPrice(promo.price, price_rx)) {
-      promo._price = extractPrice(promo.price, price_rx);
-    }
-    if (hasValidPrice(promo.description, desc_price_rx)) {
-      promo._ogprice = extractPrice(promo.description, desc_price_rx);
-    }
-    if (promo._price && promo._ogprice) {
-      const { _price, _ogprice } = promo;
-      promo.discount = parseInt(((_ogprice - _price) * 100) / _ogprice);
-    }
-  });
-  return data;
+  const hasValidPrice = (str, regx) => regx.test(str);
+  if (hasValidPrice(promo.price, price_rx)) {
+    promo._price = extractPrice(promo.price, price_rx);
+  }
+  if (hasValidPrice(promo.description, desc_price_rx)) {
+    promo._ogprice = extractPrice(promo.description, desc_price_rx);
+  }
+  if (promo._price && promo._ogprice) {
+    const { _price, _ogprice } = promo;
+    promo.discount = parseInt(((_ogprice - _price) * 100) / _ogprice);
+  }
+
+  return promo;
 }
+
+const addMetadata = (data) => {
+  data.promos.forEach(addPromoMetadata);
+  return data;
+};
 
 data.then(addMetadata).then(drawResults);
 
