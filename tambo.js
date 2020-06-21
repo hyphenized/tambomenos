@@ -121,7 +121,8 @@ let favorites;
 
 function drawResults(data) {
   const container = document.querySelector(".results");
-  const loadMoreBtn = document.querySelector('.load-more-btn')
+  const loadMoreBtn = document.querySelector(".load-more-btn");
+  const loadAllBtn = document.querySelector(".load-all-btn");
   const { promos } = data;
   const results = container.cloneNode();
   favorites = favorites || new FavoritesManager(promos);
@@ -129,25 +130,31 @@ function drawResults(data) {
   let VISIBLE = MAX_SHOWN;
 
   results.innerHTML = promos.slice(0, MAX_SHOWN).map(resultToHTML).join("");
-  
-  loadMoreBtn.style.display=null
-  if (MAX_SHOWN < promos.length) addLoadMoreBtn();
 
-  function addLoadMoreBtn() {
-    loadMoreBtn.style.display='inline-block'
-    loadMoreBtn.onclick = loadMoreResults;
+  const toggleButton = function (btn, visible) {
+    if (visible) btn.style.display = "inline-block";
+    else btn.style.display = null;
+  };
+
+  [loadAllBtn, loadMoreBtn].forEach((btn) => toggleButton(btn, false));
+
+  if (MAX_SHOWN < promos.length) addLoadMoreBtns();
+
+  function addLoadMoreBtns() {
+    [loadAllBtn, loadMoreBtn].forEach((btn) => toggleButton(btn, true));
+    loadMoreBtn.onclick = () => appendResults(VISIBLE, (VISIBLE += MAX_SHOWN));
+    loadAllBtn.onclick = () => {
+      appendResults(VISIBLE, (VISIBLE += promos.length));
+    };
   }
 
-  function loadMoreResults(e) {
-    results.innerHTML += promos
-    .slice(VISIBLE, (VISIBLE += MAX_SHOWN))
-    .map(resultToHTML)
-    .join("");
-    
+  function appendResults(start, end) {
+    results.innerHTML += promos.slice(start, end).map(resultToHTML).join("");
     if (VISIBLE >= promos.length) {
-      this.style.display=null;
+      [loadAllBtn, loadMoreBtn].forEach((btn) => toggleButton(btn, false));
     }
   }
+
   // attach event listeners
   const createAddFavorite = (promoId) => () => favorites.addFavorite(promoId);
 
@@ -214,8 +221,6 @@ const addMetadata = (data) => {
   data.promos.forEach(addPromoMetadata);
   return data;
 };
-
-data.then(addMetadata).then(drawResults);
 
 function throttle(fn, timeMs) {
   let lastCall = 0;
@@ -294,7 +299,7 @@ function search(query, criteria) {
   });
 }
 
-function handleSearch(event) {
+function handleSearch(_event) {
   const input = searchInput.value.toLowerCase();
   const criteria = sortInput.value;
   search(input, criteria);
@@ -303,3 +308,5 @@ function handleSearch(event) {
 searchInput.addEventListener("input", maybeDebounce(handleSearch, 700));
 
 sortInput.onchange = handleSearch;
+
+data.then(addMetadata).then(handleSearch);

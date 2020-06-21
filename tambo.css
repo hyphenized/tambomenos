@@ -276,7 +276,7 @@ form button {
   -moz-user-select: none;
 }
 
-.load-more-btn {
+.load-more-btn, .load-all-btn {
   border: 1px solid white;
   padding: 0.375rem 0.75rem;
   text-transform: uppercase;
