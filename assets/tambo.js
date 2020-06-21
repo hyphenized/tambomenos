@@ -157,6 +157,11 @@ function drawResults(data) {
 
   function appendResults(start, end) {
     results.innerHTML += promos.slice(start, end).map(resultToHTML).join("");
+    results
+      .querySelectorAll(".result")
+      .forEach(
+        (result) => (result.onclick = createAddFavorite(result.dataset.id))
+      );
     if (VISIBLE >= promos.length) {
       [loadAllBtn, loadMoreBtn].forEach((btn) => toggleButton(btn, false));
     }
