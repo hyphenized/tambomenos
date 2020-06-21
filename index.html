@@ -11,10 +11,21 @@
 <body>
     <main>
         <h1 class="site-title">TAMBOMENOS</h1>
-        <form class="search-box">
-            <input id="search" type="text">
-            <button id="searchnow">Buscar</button>
+        <form class="search">
+            <div class="search-sorter">
+                <label for="search-sorter" selected>ORDENAR POR:</label>
+                <select id="search-sorter" class="search-sorter-select" name="sorter" id="sorter">
+                    <option value="price" selected>Precio</option>
+                    <option value="discount">Descuento</option>
+                    <option value="dateExp">Fecha Exp</option>
+                </select>
+            </div>
+            <div class="search-box">
+                <input id="search" type="text">
+                <button id="searchnow">Buscar</button>
+            </div>
         </form>
+
         <div class="results">
 
         </div>

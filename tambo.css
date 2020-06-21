@@ -10,11 +10,41 @@ main {
   max-width: 860px;
   padding: 3rem 1rem;
 }
-.search-box {
-  max-width: 30rem;
-  margin: 3rem auto;
+.search{
   margin-top: 4.5rem;
+  margin: 3rem 0;
 }
+.search-box {
+  flex: 1;
+  display: flex;
+  max-width: 30rem;
+  margin-left: auto;
+}
+
+.search-sorter {
+  display: flex;
+  align-items: center;
+  margin-right: 0.5rem;
+  font-family: "tambo";
+}
+
+.search-sorter-select {
+  font-family: "tambo";
+  margin-left: 0.2rem;
+  flex: 1;
+  background: purple;
+  border: none;
+  align-self: stretch;
+  color: white;
+  /* font-size: 70%; */
+  border-radius: 4px;
+}
+
+.search-sorter::placeholder {
+  color: inherit;
+  font-family: "tambo";
+}
+
 form {
   display: flex;
 }
