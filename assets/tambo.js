@@ -317,7 +317,7 @@ function handleSearch(_event) {
   search(input, criteria);
 }
 
-searchInput.addEventListener("input", maybeDebounce(handleSearch, 700));
+searchInput.addEventListener("input", maybeDebounce(handleSearch, 400));
 
 sortInput.onchange = handleSearch;
 
