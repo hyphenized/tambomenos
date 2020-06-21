@@ -41,31 +41,95 @@ function makeModal(promoData) {
 </div>`;
 }
 
+function showResultModal(_event) {
+  const modal = document.getElementById("result-modal");
+  /* if (this != _event.target) return */
+  if (modal.loading) return;
+  modal.loading = true;
+  promo_data
+    .then(addPromoMetadata)
+    .then((promo) => {
+      modal.onclick = function (e) {
+        if (e.target == this) modal.style.display = null;
+      };
+      modal.innerHTML = makeModal(promo);
+      modal.querySelector(".modal-close").onclick = modal.onclick;
+      modal.style.display = "block";
+      //console.log(this.dataset.id);
+    })
+    .finally(() => (modal.loading = false));
+}
+
+function FavoritesManager(promos) {
+  let favorites = [];
+  const container = document.querySelector(".favorites");
+  const list = document.querySelector(".favorites ul");
+
+  function createFavorite(promo) {
+    const { _id: promoId, name, photo, price } = promo;
+    const html = `<li data-promo-id=${promoId}>
+    <div class="favorite">
+      <div class="img-wrapper">
+         <img width="100%" src="https://tambomas.pe/${photo}">
+      </div>
+      <p class="result-title">${name}</p>
+      <span class="result-price">${price}</span>
+      <span class="favorite-remove-btn">x</span>
+    </div>
+   </li>
+   `;
+    return { promoId, html };
+  }
+
+  function renderFavorites() {
+    if (favorites.length) {
+      container.style.display = "block";
+      list.innerHTML = favorites.map((f) => f.html).join("");
+
+      const createRemove = (id) =>
+        function (e) {
+          e.stopPropagation();
+          removeFavorite(id);
+        };
+
+      [...list.children].forEach(
+        (favorite) => (favorite.onclick = showResultModal)
+      );
+      list
+        .querySelectorAll(".favorite-remove-btn")
+        .forEach((closeBtn, id) => (closeBtn.onclick = createRemove(id)));
+      return;
+    }
+    container.style.display = null;
+  }
+  function removeFavorite(index) {
+    favorites = favorites.filter((_, id) => id !== index);
+    renderFavorites();
+  }
+  function addFavorite(promoId) {
+    const promo = promos.find((promo) => promo._id === promoId);
+    if (favorites.find((f) => f.promoId == promoId)) return;
+    favorites.push(createFavorite(promo));
+    renderFavorites();
+  }
+  return {
+    addFavorite,
+  };
+}
+
 function drawResults(data) {
   const container = document.querySelector(".results");
   const { promos } = data;
   const results = container.cloneNode();
+  const favorites = new FavoritesManager(promos);
   //devLog(results);
-  function showResultModal(_event) {
-    const modal = document.getElementById("result-modal");
-    if (modal.loading) return;
-    modal.loading = true;
-    promo_data
-      .then(addPromoMetadata)
-      .then((promo) => {
-        modal.onclick = function (e) {
-          if (e.target == this) modal.style.display = null;
-        };
-        modal.innerHTML = makeModal(promo);
-        modal.querySelector(".modal-close").onclick = modal.onclick;
-        modal.style.display = "block";
-        //console.log(this.dataset.id);
-      })
-      .finally(() => (modal.loading = false));
-  }
   results.innerHTML = promos.map(resultToHTML).join("");
   // attach event listeners
-  [...results.children].forEach((result) => (result.onclick = showResultModal));
+  const createAddFavorite = (promoId) => () => favorites.addFavorite(promoId);
+
+  [...results.children].forEach(
+    (result) => (result.onclick = createAddFavorite(result.dataset.id))
+  );
 
   container.parentElement.replaceChild(results, container);
 
