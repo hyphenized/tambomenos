@@ -14,7 +14,7 @@ main {
   max-width: 860px;
   padding: 3rem 1rem;
 }
-.search{
+.search {
   display: flex;
   margin-top: 4.5rem;
   margin: 3rem 0;
@@ -77,6 +77,9 @@ form button {
   margin-top: 4rem;
   text-align: center;
   color: purple;
+}
+.results-container {
+  text-align: center;
 }
 .results {
   display: flex;
@@ -204,7 +207,7 @@ form button {
   right: 0;
   background: var(--yellow);
   background: #fff;
-  box-shadow: inset 0 0 0 5px purple,  0 0 15px rgba(20, 20, 20, 0.479);
+  box-shadow: inset 0 0 0 5px purple, 0 0 15px rgba(20, 20, 20, 0.479);
   padding: 5px 0;
   border-radius: 10px;
   display: none;
@@ -231,12 +234,12 @@ form button {
 }
 .favorites-item {
   display: block;
-  padding: 0.25rem 0 ;
+  padding: 0.25rem 0;
   border-bottom: 1px solid rgba(37, 37, 37, 0.26);
   position: relative;
 }
 .favorites-item:last-child {
-  border: none
+  border: none;
 }
 
 .favorite {
@@ -250,13 +253,13 @@ form button {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.favorite .result-price{
+.favorite .result-price {
   font-size: 100%;
 }
 .favorite .img-wrapper {
   max-width: 8rem;
 }
-.favorite-remove-btn{
+.favorite-remove-btn {
   position: absolute;
   top: 0;
   right: 0;
@@ -271,4 +274,15 @@ form button {
   cursor: pointer;
   user-select: none;
   -moz-user-select: none;
+}
+
+.load-more-btn {
+  border: 1px solid white;
+  padding: 0.375rem 0.75rem;
+  text-transform: uppercase;
+  font-family: "tambo";
+  background: purple;
+  border-radius: 4px;
+  color: white;
+  display: none;
 }

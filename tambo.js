@@ -121,17 +121,41 @@ let favorites;
 
 function drawResults(data) {
   const container = document.querySelector(".results");
+  const loadMoreBtn = document.querySelector('.load-more-btn')
   const { promos } = data;
   const results = container.cloneNode();
   favorites = favorites || new FavoritesManager(promos);
-  //devLog(results);
-  results.innerHTML = promos.map(resultToHTML).join("");
+  const MAX_SHOWN = 6;
+  let VISIBLE = MAX_SHOWN;
+
+  results.innerHTML = promos.slice(0, MAX_SHOWN).map(resultToHTML).join("");
+  
+  loadMoreBtn.style.display=null
+  if (MAX_SHOWN < promos.length) addLoadMoreBtn();
+
+  function addLoadMoreBtn() {
+    loadMoreBtn.style.display='inline-block'
+    loadMoreBtn.onclick = loadMoreResults;
+  }
+
+  function loadMoreResults(e) {
+    results.innerHTML += promos
+    .slice(VISIBLE, (VISIBLE += MAX_SHOWN))
+    .map(resultToHTML)
+    .join("");
+    
+    if (VISIBLE >= promos.length) {
+      this.style.display=null;
+    }
+  }
   // attach event listeners
   const createAddFavorite = (promoId) => () => favorites.addFavorite(promoId);
 
-  [...results.children].forEach(
-    (result) => (result.onclick = createAddFavorite(result.dataset.id))
-  );
+  results
+    .querySelectorAll(".result")
+    .forEach(
+      (result) => (result.onclick = createAddFavorite(result.dataset.id))
+    );
 
   container.parentElement.replaceChild(results, container);
 
